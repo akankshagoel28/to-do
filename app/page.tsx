@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { TodoList } from "../components/TodoList";
 import { AddTodo } from "../components/AddTodo";
 import { DateCarousel } from "../components/DateCarousel";
-import { format } from "date-fns";
+import { format, isToday, isTomorrow, isYesterday } from "date-fns";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -15,6 +15,20 @@ export default function Home() {
     setMounted(true);
   }, []);
 
+  const getDateDescription = (dateString: string) => {
+    const date = new Date(dateString);
+    if (isToday(date)) {
+      return "Today";
+    }
+    if (isTomorrow(date)) {
+      return "Tomorrow";
+    }
+    if (isYesterday(date)) {
+      return "Yesterday";
+    }
+    return format(date, "MMMM d, yyyy");
+  };
+
   if (!mounted) {
     return null;
   }
@@ -22,7 +36,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-100">
       <div className="container mx-auto max-w-xl">
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col gap-5">
           <div className="bg-white px-4 py-6 rounded-b-3xl drop-shadow-2xl">
             <div className="mt-6 w-fit mx-auto flex flex-col gap-2">
               <h1 className="text-3xl font-bold text-gray-900">
@@ -36,7 +50,12 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="flex-1 overflow-auto px-3 py-6">
+          <p className="text-left text-xl font-bold px-4">
+            {mounted && selectedDate
+              ? getDateDescription(selectedDate)
+              : ""}
+          </p>
+          <div className="flex-1 overflow-auto px-3">
             <div className="space-y-6">
               {selectedDate && (
                 <>
